@@ -1,6 +1,8 @@
--- To drop database tournament
-DROP DATABASE tournament;
+-- To drop database tournament if it exists
+DROP DATABASE IF EXISTS tournament;
 CREATE DATABASE tournament;
+
+-- connect to tournament database 
 \c tournament
 
 -- player table
@@ -9,11 +11,19 @@ CREATE TABLE player(name text, player_id SERIAL PRIMARY KEY);
                  
 -- match table
 CREATE TABLE match(
-                   winner INTEGER REFERENCES player(player_id),
-                   loser INTEGER REFERENCES player(player_id)
+                    match_id SERIAL PRIMARY KEY,
+                    winner INTEGER REFERENCES player(player_id),
+                    loser INTEGER REFERENCES player(player_id)
                   );
                   
 -- creating VIEW standing
 CREATE VIEW standing 
-AS SELECT player_id,name,(select count(*) FROM match WHERE player.player_id=match.winner) AS wins 
+AS SELECT 
+        player_id,
+        name,
+        (select count(*) FROM match WHERE player.player_id = match.winner) AS wins ,
+        (select count(*)
+            FROM match 
+            WHERE player.player_id = match.winner or player.player_id = match.loser) 
+            AS matches
 FROM player ORDER BY wins DESC;

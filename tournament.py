@@ -85,7 +85,7 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    INSERT_MATCH = "INSERT INTO match VALUES(%s,%s)"
+    INSERT_MATCH = "INSERT INTO match(winner, loser) VALUES(%s,%s)"
     # winner, loser
     DATA = (winner, loser,)
     execute_query(INSERT_MATCH, DATA, False, True)
