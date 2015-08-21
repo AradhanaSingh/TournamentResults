@@ -5,7 +5,7 @@ import psycopg2
 
 def execute_query(query, variables=(), fetch=False, commit=False):
     try:
-        """Connect to the PostgreSQL database.  Returns a database connection."""
+        """Connect to the PostgreSQL database.Returns a database connection."""
         conn = psycopg2.connect("dbname=tournament")
         curr = conn.cursor()
         curr.execute(query, variables)
@@ -24,13 +24,13 @@ def execute_query(query, variables=(), fetch=False, commit=False):
         # returns 1 incase of exeception
         return 1, None
 
+
 def deleteMatches():
     """Remove all the match records from the database."""
     DELETE_MATCHES = "DELETE FROM match"
     output = execute_query(DELETE_MATCHES, None, False, True)
     if output[0] == 1:
         print "Error in database call"
-        
 
 
 def deletePlayers():
@@ -51,6 +51,7 @@ def countPlayers():
         result = output[1]
         no_of_players = result[0][0]
         return no_of_players
+
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -126,7 +127,7 @@ def swissPairings():
         swissPair = []
         length = len(data)
         # assuming even number of players
-        if length%2 == 0:
+        if length % 2 == 0:
             # adding information is swissPair list
             for i in range(0, length, 2):
                 pair = []
@@ -140,3 +141,4 @@ def swissPairings():
             return swissPair
         else:
             print "Program handles only even number of players"
+            
