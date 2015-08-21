@@ -31,19 +31,11 @@ Steps to run this project
 
     cd /vagrant/tournament
     
-10. Connect to postgresql database
+10. Running sql script
     
-    psql
-
-11. Excecute sql script
+    psql -f tournament.sql
     
-    \i tournament.sql
-
-12. Exit from postgresql database
-
-    ctrl+d
-    
-13. To run given unit testcases
+11. To run given unit testcases
 
     python tournament_test.py
     
