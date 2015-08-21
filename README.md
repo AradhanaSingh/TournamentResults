@@ -2,6 +2,7 @@
 Full Stack Web Developer Nanodegree Udacity Project
 
 Steps to run this project
+
 1. Install Virtual Box 
 2. Install vagrant
 3. Install git
