@@ -31,6 +31,7 @@ def deleteMatches():
     output = execute_query(DELETE_MATCHES, None, False, True)
     if output[0] == 1:
         print "Error in database call"
+	raise
 
 
 def deletePlayers():
@@ -39,7 +40,7 @@ def deletePlayers():
     output = execute_query(DELETE_PLAYERS, None, False, True)
     if output[0] == 1:
         print "Error in database call"
-
+	raise
 
 def countPlayers():
     """Returns the number of players currently registered."""
@@ -47,6 +48,7 @@ def countPlayers():
     output = execute_query(COUNT_PLAYERS, None, True, False)
     if output[0] == 1:
         print "Error in database call"
+	raise
     else:
         result = output[1]
         no_of_players = result[0][0]
@@ -65,6 +67,7 @@ def registerPlayer(name):
     output = execute_query(INSERT_PLAYER, DATA, False, True)
     if output[0] == 1:
         print "Error in database call"
+	raise
 
 
 def playerStandings():
@@ -85,6 +88,7 @@ def playerStandings():
     output = execute_query(GET_PLAYER_STANDINGS, None, True, False)
     if output[0] == 1:
         print "Error in database call"
+	raise
     else:
         result = output[1]
         return result
@@ -102,6 +106,7 @@ def reportMatch(winner, loser):
     output = execute_query(INSERT_MATCH, DATA, False, True)
     if output[0] == 1:
         print "Error in database call"
+	raise
 
 
 def swissPairings():
@@ -122,6 +127,7 @@ def swissPairings():
     output = execute_query(GET_PAIRS, None, True, False)
     if output[0] == 1:
         print "Error in database call"
+	raise
     else:
         data = output[1]
         swissPair = []
