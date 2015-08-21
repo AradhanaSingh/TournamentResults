@@ -13,7 +13,8 @@ CREATE TABLE player(name text, player_id SERIAL PRIMARY KEY);
 CREATE TABLE match(
                     match_id SERIAL PRIMARY KEY,
                     winner INTEGER REFERENCES player(player_id),
-                    loser INTEGER REFERENCES player(player_id)
+                    loser INTEGER REFERENCES player(player_id),
+                    CHECK (winner <> loser)
                   );
                   
 -- creating VIEW standing
