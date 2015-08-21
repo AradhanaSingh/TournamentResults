@@ -4,43 +4,53 @@ import psycopg2
 
 
 def execute_query(query, variables=(), fetch=False, commit=False):
-    conn = connect()
-    curr = conn.cursor()
-    curr.execute(query, variables)
-    if fetch:
-        out = curr.fetchall()
-    else:
-        out = None
-    if commit:
-        conn.commit()
-    conn.close()
-    return out
-
-
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
-
+    try:
+        """Connect to the PostgreSQL database.  Returns a database connection."""
+        conn = psycopg2.connect("dbname=tournament")
+        curr = conn.cursor()
+        curr.execute(query, variables)
+        if fetch:
+            out = curr.fetchall()
+        else:
+            out = None
+        if commit:
+            conn.commit()
+        conn.close()
+        # return 0 if execution is successful
+        return 0, out
+    except Exception as e:
+        print e
+        print "could not connect to database"
+        # returns 1 incase of exeception
+        return 1, None
 
 def deleteMatches():
     """Remove all the match records from the database."""
     DELETE_MATCHES = "DELETE FROM match"
-    execute_query(DELETE_MATCHES, None, False, True)
+    output = execute_query(DELETE_MATCHES, None, False, True)
+    if output[0] == 1:
+        print "Error in database call"
+        
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
     DELETE_PLAYERS = "DELETE FROM player"
-    execute_query(DELETE_PLAYERS, None, False, True)
+    output = execute_query(DELETE_PLAYERS, None, False, True)
+    if output[0] == 1:
+        print "Error in database call"
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
     COUNT_PLAYERS = "SELECT COUNT(*) FROM player"
     output = execute_query(COUNT_PLAYERS, None, True, False)
-    no_of_players = output[0][0]
-    return no_of_players
-
+    if output[0] == 1:
+        print "Error in database call"
+    else:
+        result = output[1]
+        no_of_players = result[0][0]
+        return no_of_players
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -51,7 +61,9 @@ def registerPlayer(name):
     """
     INSERT_PLAYER = "INSERT INTO player(name) values(%s)"
     DATA = (name, )
-    execute_query(INSERT_PLAYER, DATA, False, True)
+    output = execute_query(INSERT_PLAYER, DATA, False, True)
+    if output[0] == 1:
+        print "Error in database call"
 
 
 def playerStandings():
@@ -67,16 +79,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    GET_PLAYER_STANDINGS = ("SELECT player_id, name, (select"
-                            " count(*) FROM match"
-                            " WHERE player.player_id=match.winner) AS wins, "
-                            " (SELECT count(*) FROM  match"
-                            " WHERE player.player_id = winner"
-                            " or player.player_id = loser) AS MATCHES"
-                            " FROM player ORDER BY wins DESC")
+    GET_PLAYER_STANDINGS = ("SELECT * FROM standing")
 
-    data = execute_query(GET_PLAYER_STANDINGS, None, True, False)
-    return data
+    output = execute_query(GET_PLAYER_STANDINGS, None, True, False)
+    if output[0] == 1:
+        print "Error in database call"
+    else:
+        result = output[1]
+        return result
 
 
 def reportMatch(winner, loser):
@@ -88,7 +98,9 @@ def reportMatch(winner, loser):
     INSERT_MATCH = "INSERT INTO match(winner, loser) VALUES(%s,%s)"
     # winner, loser
     DATA = (winner, loser,)
-    execute_query(INSERT_MATCH, DATA, False, True)
+    output = execute_query(INSERT_MATCH, DATA, False, True)
+    if output[0] == 1:
+        print "Error in database call"
 
 
 def swissPairings():
@@ -106,18 +118,25 @@ def swissPairings():
     """
     # to get player id and name from VIEW
     GET_PAIRS = "SELECT player_id,name from standing"
-    data = execute_query(GET_PAIRS, None, True, False)
-    swissPair = []
-    length = len(data)
-    # assuming even number of players
-    # adding information is swissPair list
-    for i in range(0, length, 2):
-        pair = []
-        # added player 1 id
-        pair.append(data[i][0])
-        pair.append(data[i][1])
-        pair.append(data[i+1][0])
-        pair.append(data[i+1][1])
-        swissPair.append(pair)
-    # print swissPair
-    return swissPair
+    output = execute_query(GET_PAIRS, None, True, False)
+    if output[0] == 1:
+        print "Error in database call"
+    else:
+        data = output[1]
+        swissPair = []
+        length = len(data)
+        # assuming even number of players
+        if length%2 == 0:
+            # adding information is swissPair list
+            for i in range(0, length, 2):
+                pair = []
+                # added player 1 id
+                pair.append(data[i][0])
+                pair.append(data[i][1])
+                pair.append(data[i+1][0])
+                pair.append(data[i+1][1])
+                swissPair.append(pair)
+            # print swissPair
+            return swissPair
+        else:
+            print "Program handles only even number of players"
